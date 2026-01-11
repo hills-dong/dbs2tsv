@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBS 账单转换工具 - PDF to TSV</title>
+    <meta name="description" content="将 DBS 银行 PDF 电子账单转换为 Excel/CSV 格式,纯本地处理，保护隐私">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="logo.png">
+</head>
+
+<body>
+    <!-- Admin Layout Container -->
+    <div class="admin-layout">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <!-- Logo & Title -->
+            <div class="sidebar-header">
+                <img src="logo.png" alt="DBS2TSV Logo" class="logo-icon">
+                <div>
+                    <h1>DBS 账单转换</h1>
+                    <p class="subtitle">安全 · 本地 · 快速</p>
+                </div>
+            </div>
+
+            <!-- Upload Section: DBS Statement -->
+            <div class="sidebar-section">
+                <h2 class="section-title">📁 DBS 银行账单</h2>
+                <div id="dropZone" class="drop-zone-compact">
+                    <svg class="upload-icon-small" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M17 8L12 3L7 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M12 3V15" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                    <p class="drop-hint">拖拽 DBS 账单 PDF</p>
+                    <button id="selectFileBtn" class="btn-primary btn-block">选择 DBS 账单</button>
+                    <input type="file" id="fileInput" accept=".pdf" hidden>
+                </div>
+            </div>
+
+            <!-- Upload Section: PayLah Statement (Multiple) -->
+            <div class="sidebar-section">
+                <h2 class="section-title">📱 PayLah 流水 (用于匹配TOPUP记录)</h2>
+                <div id="dropZonePayLah" class="drop-zone-compact drop-zone-secondary">
+                    <svg class="upload-icon-small" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                    <p class="drop-hint">支持多个文件</p>
+                    <button id="selectPayLahBtn" class="btn-secondary btn-block">添加 PayLah 流水</button>
+                    <input type="file" id="payLahInput" accept=".pdf" multiple hidden>
+                </div>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="sidebar-section">
+                <h2 class="section-title">文件信息</h2>
+                <div class="stat-compact">
+                    <span class="stat-label">DBS 文件</span>
+                    <span id="fileName" class="stat-value-small">未选择</span>
+                </div>
+                <div class="stat-compact">
+                    <span class="stat-label">PayLah 文件</span>
+                    <span id="payLahFileName" class="stat-value-small">未选择</span>
+                </div>
+            </div>
+
+            <!-- Actions Section -->
+            <div class="sidebar-section" id="actionsSection">
+                <h2 class="section-title">操作</h2>
+                <button id="copyBtn" class="btn-primary btn-block">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M8 4V16C8 16.5304 8.21071 17.0391 8.58579 17.4142C8.96086 17.7893 9.46957 18 10 18H18C18.5304 18 19.0391 17.7893 19.4142 17.4142C19.7893 17.0391 20 16.5304 20 16V7.242C20 6.97556 19.9467 6.71181 19.8433 6.46624C19.7399 6.22068 19.5885 5.99824 19.398 5.812L16.083 2.57C15.7094 2.20466 15.2076 2.00007 14.685 2H10C9.46957 2 8.96086 2.21071 8.58579 2.58579C8.21071 2.96086 8 3.46957 8 4Z"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        <path
+                            d="M16 18V20C16 20.5304 15.7893 21.0391 15.4142 21.4142C15.0391 21.7893 14.5304 22 14 22H6C5.46957 22 4.96086 21.7893 4.58579 21.4142C4.21071 21.0391 4 20.5304 4 20V9C4 8.46957 4.21071 7.96086 4.58579 7.58579C4.96086 7.21071 5.46957 7 6 7H8"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    复制 TSV 到剪切板
+                </button>
+            </div>
+
+
+
+            <!-- Footer -->
+            <div class="sidebar-footer">
+                <p>© 2026 DBS2TSV</p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Breadcrumb -->
+            <div class="breadcrumb">
+                <a href="#">首页</a>
+                <span class="separator">›</span>
+                <a href="#">工具</a>
+                <span class="separator">›</span>
+                <span class="current">DBS 账单转换</span>
+            </div>
+
+            <!-- Processing Status -->
+            <div id="processingStatus" class="processing-status hidden">
+                <div class="spinner"></div>
+                <p>正在解析 PDF 文件...</p>
+            </div>
+
+            <!-- Error Message -->
+            <div id="errorMessage" class="error-message hidden">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M15 9L9 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <path d="M9 9L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+                <div>
+                    <h3>解析失败</h3>
+                    <p id="errorText"></p>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <section id="resultsSection" class="results-section hidden">
+                <div class="results-header">
+                    <h2>解析结果</h2>
+                    <div class="results-stats">
+                        <span class="stat-badge" id="statDBS">银行: <strong>0</strong></span>
+                        <span class="stat-badge" id="statPayLah">PayLah: <strong>0</strong></span>
+                        <span class="stat-badge" id="statMatch">匹配: <strong>0/0</strong></span>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th>日期</th>
+                                <th>描述</th>
+                                <th>支出</th>
+                                <th>收入</th>
+                                <th>余额</th>
+                                <th>货币</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsBody">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Welcome Message (shown when no file is loaded) -->
+            <div id="welcomeMessage" class="welcome-message">
+                <svg class="welcome-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+                <h2>欢迎使用 DBS 账单转换工具</h2>
+                <p>请从左侧上传 DBS 银行 PDF 电子账单文件</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- PDF.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="parser.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

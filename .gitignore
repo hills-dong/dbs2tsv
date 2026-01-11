@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+**/node_modules/
+# package-lock.json # Good practice to commit lock files for apps
+yarn.lock
+
+# System Files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Logs and Debug
+*.log
+debug.txt
+npm-debug.log*
+
+# Private Data (PDF Statements)
+# Ignore all PDFs by default to prevent leaking sensitive bank statements
+*.pdf
+
+# Allow anonymized sample files for testing
+!tests/*_sample.pdf
+
+# Build output (if any)
+dist/
+build/
