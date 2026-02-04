@@ -4,6 +4,8 @@
 
 🔗 **在线体验**: https://hills-dong.github.io/dbs2tsv/
 
+> 💡 **快速体验**: 可使用 `tests/` 目录下的 `Statement_sample.pdf` 和 `paylah_sample.pdf` 进行测试。
+
 ![应用截图](screenshot.png)
 
 ## ✨ 核心特性
