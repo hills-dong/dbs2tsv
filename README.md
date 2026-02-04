@@ -2,6 +2,8 @@
 
 一个纯前端的 Web 应用，能够将 DBS 银行（新加坡）的 PDF 电子对账单转换为 TSV 格式，并智能匹配 PayLah! 流水，还原每一笔消费的真实去向。
 
+🔗 **在线体验**: https://hills-dong.github.io/dbs2tsv/
+
 ![应用截图](screenshot.png)
 
 ## ✨ 核心特性
